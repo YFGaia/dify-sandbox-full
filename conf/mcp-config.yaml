@@ -1,0 +1,72 @@
+# Dify-Sandbox MCP Server Configuration
+# 专为 Model Context Protocol (MCP) 服务设计的配置文件
+
+# MCP 服务器配置
+mcp:
+  # 服务器名称和版本
+  name: "dify-sandbox"
+  version: "1.0.0"
+  
+  # 传输配置
+  transport:
+    # 默认传输模式: stdio, sse, http, streamable-http
+    mode: "sse"
+    # HTTP 模式端口 (仅在 sse/http/streamable-http 模式下使用)
+    http_port: 3000
+    # HTTP 基础 URL (仅在 HTTP 模式下使用)
+    base_url: "http://0.0.0.0:3000"
+
+# 执行环境配置
+execution:
+  # 最大工作进程数
+  max_workers: 4
+  # 最大请求数
+  max_requests: 50
+  # 工作进程超时时间 (秒)
+  worker_timeout: 60
+
+# Python 环境配置
+python:
+  # Python 解释器路径
+  path: "/usr/local/bin/python3"
+  # Python 库路径 (重要依赖所在安装路径)
+  lib_paths:
+    - "/usr/local/lib/python3.10"
+    - "/usr/lib/python3.10"
+    - "/usr/lib/python3"
+    - "/usr/lib/x86_64-linux-gnu"
+    - "/usr/lib/aarch64-linux-gnu"
+    - "/etc/ssl/certs/ca-certificates.crt"
+    - "/etc/nsswitch.conf"
+    - "/etc/hosts"
+    - "/etc/resolv.conf"
+    - "/run/systemd/resolve/stub-resolv.conf"
+    - "/run/resolvconf/resolv.conf"
+    - "/etc/localtime"
+    - "/usr/share/zoneinfo"
+    - "/etc/timezone"
+    - "/usr/local/lib/python3.10/site-packages/pandas"
+  # 依赖更新间隔
+  deps_update_interval: "24h"
+
+# 安全配置
+security:
+  # 是否启用网络访问 (请确保环境中没有网络风险)
+  enable_network: true
+  # 是否启用预加载 (出于安全考虑请保持为 false)
+  enable_preload: false
+  # 允许的系统调用 (如果不了解 seccomp 工作原理请保持为空)
+  allowed_syscalls: []
+
+# 代理配置
+proxy:
+  socks5: ""
+  http: ""
+  https: ""
+
+# 日志配置
+logging:
+  # 是否显示日志 (HTTP 模式下建议为 true，STDIO 模式会自动处理)
+  show_log: true
+  # 日志级别: debug, info, warn, error
+  level: "info" 
