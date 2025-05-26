@@ -156,7 +156,7 @@ docker run -p 3000:3000 \
 docker run -d \
   --name dify-sandbox-mcp \
   -p 3000:3000 \
-  -e MCP_TRANSPORT=sse \
+  -e MCP_TRANSPORT=streamable-http \
   -e MCP_HTTP_PORT=3000 \
   -e MCP_BASE_URL=http://your-server.com:3000 \
   -e MCP_SHOW_LOG=true \
@@ -169,8 +169,8 @@ docker run -d \
 
 | 变量名 | 默认值 | 说明 |
 |--------|--------|------|
-| `MCP_TRANSPORT` | `sse` | 传输模式：`stdio`, `sse` |
-| `MCP_HTTP_PORT` | `3000` | HTTP 服务端口 (SSE 模式) |
+| `MCP_TRANSPORT` | `streamable-http` | 传输模式：`stdio`, `sse`, `streamable-http` |
+| `MCP_HTTP_PORT` | `3000` | HTTP 服务端口 (StreamableHTTP/SSE 模式) |
 | `MCP_BASE_URL` | `http://localhost:3000` | 客户端访问的基础 URL |
 | `MCP_SHOW_LOG` | `true` | 是否显示日志 |
 | `MCP_LOG_LEVEL` | `info` | 日志级别：`debug`, `info`, `warn`, `error` |
@@ -191,16 +191,20 @@ docker run -d \
 }
 ```
 
-#### HTTP 客户端集成 (SSE)
+#### HTTP 客户端集成 (StreamableHTTP/SSE)
 
-**端点访问：**
+**StreamableHTTP 端点访问（默认模式）：**
+- **StreamableHTTP 连接**: `http://your-server:3000/mcp`
+- **协议**: HTTP POST with streaming response
+
+**SSE 端点访问（备选模式）：**
 - **SSE 连接**: `http://your-server:3000/sse`
 - **消息发送**: `http://your-server:3000/message`
 
 **MCP Inspector 测试：**
 1. 打开 [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector)
-2. 选择 "Server-Sent Events (SSE)" 连接类型
-3. 输入 SSE URL：`http://your-server:3000/sse`
+2. **StreamableHTTP 模式**：选择 "HTTP" 连接类型，输入 URL：`http://your-server:3000/mcp`
+3. **SSE 模式**：选择 "Server-Sent Events (SSE)" 连接类型，输入 SSE URL：`http://your-server:3000/sse`
 4. 点击连接测试
 
 ## 🛠️ MCP Tools 详细说明
@@ -280,40 +284,10 @@ docker run -d \
 HTTP Client → HTTP API Server → internal/service/ → core execution
 ```
 
-### MCP 架构
-```
-MCP Client → MCP Server → internal/service/ → core execution
-```
-
-### MCP 优势
-1. **协议标准化** - 遵循 MCP 规范，与 AI 助手无缝集成
-2. **传输灵活** - 支持 STDIO、SSE 等多种传输方式
-3. **类型安全** - 强类型的工具定义和参数验证
-4. **易于集成** - AI 助手可直接理解和调用工具
-
-## 🔒 安全考虑
-
-1. **沙箱隔离**：基于 libseccomp 的系统调用过滤
-2. **资源限制**：CPU、内存、执行时间限制
-3. **网络控制**：默认禁用网络访问，可选择性启用
-4. **文件系统**：受限的文件系统访问权限
-5. **进程隔离**：每次执行都在独立的进程中运行
-
-## 📄 许可证
-
-本项目采用 Apache-2.0 许可证。详见 [LICENSE](LICENSE) 文件。
-
-## 🤝 贡献
-
-欢迎提交 Issue 和 Pull Request！
-
 ## 📚 相关文档
 
 - [Model Context Protocol (MCP)](https://modelcontextprotocol.io/)
 - [MCP Go SDK](https://github.com/mark3labs/mcp-go)
 - [Sandbox MCP 详细设计文档](dify-sandbox-mcp-planning.md)
+- [MCP Server 使用示例](USAGE_EXAMPLES.md)
 - [原始 Dify-Sandbox](https://github.com/langgenius/dify-sandbox)
-
----
-
-**注意**：在生产环境中建议使用 Linux 系统以获得完整的沙箱安全特性。

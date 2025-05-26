@@ -25,6 +25,39 @@ type CodeExecutionResult struct {
 	Timestamp string `json:"timestamp"`
 }
 
+// runCodeWithContext executes code with context timeout control
+func runCodeWithContext(ctx context.Context, language string, code string, preload string, options *runner_types.RunnerOptions) (*types.DifySandboxResponse, error) {
+	// Create a channel to receive the result
+	resultChan := make(chan *types.DifySandboxResponse, 1)
+
+	// Run the code execution in a goroutine
+	go func() {
+		var result *types.DifySandboxResponse
+		switch language {
+		case "python":
+			result = service.RunPython3Code(code, preload, options)
+		case "nodejs":
+			result = service.RunNodeJsCode(code, preload, options)
+		default:
+			result = types.ErrorResponse(-400, "unsupported language")
+		}
+
+		select {
+		case resultChan <- result:
+		case <-ctx.Done():
+			// Context cancelled, don't send result
+		}
+	}()
+
+	// Wait for either result or context cancellation
+	select {
+	case result := <-resultChan:
+		return result, nil
+	case <-ctx.Done():
+		return types.ErrorResponse(-408, "Request timed out"), ctx.Err()
+	}
+}
+
 // RunPythonCode executes Python code in the sandbox
 func (h *CodeExecutionHandler) RunPythonCode(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	// Extract arguments
@@ -45,10 +78,14 @@ func (h *CodeExecutionHandler) RunPythonCode(ctx context.Context, request mcp.Ca
 		enableNetwork = en
 	}
 
-	// Call the service layer directly
-	result := service.RunPython3Code(code, preload, &runner_types.RunnerOptions{
+	// Call the service layer with context control
+	result, err := runCodeWithContext(ctx, "python", code, preload, &runner_types.RunnerOptions{
 		EnableNetwork: enableNetwork,
 	})
+
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("Execution error: %v", err)), nil
+	}
 
 	// Convert response to MCP result
 	return convertDifySandboxResponse(result, "python"), nil
@@ -74,10 +111,14 @@ func (h *CodeExecutionHandler) RunNodeJSCode(ctx context.Context, request mcp.Ca
 		enableNetwork = en
 	}
 
-	// Call the service layer directly
-	result := service.RunNodeJsCode(code, preload, &runner_types.RunnerOptions{
+	// Call the service layer with context control
+	result, err := runCodeWithContext(ctx, "nodejs", code, preload, &runner_types.RunnerOptions{
 		EnableNetwork: enableNetwork,
 	})
+
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("Execution error: %v", err)), nil
+	}
 
 	// Convert response to MCP result
 	return convertDifySandboxResponse(result, "nodejs"), nil

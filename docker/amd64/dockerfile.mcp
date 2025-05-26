@@ -97,7 +97,7 @@ RUN chmod +x /main /env && \
     rm -f /env
 
 # Set environment variables for MCP server
-ENV MCP_TRANSPORT=sse
+ENV MCP_TRANSPORT=streamable-http
 ENV MCP_HTTP_PORT=3000
 # BaseURL 应该在运行时通过 -e 参数指定，这里提供默认值
 # 用户需要根据实际的宿主机地址或域名来设置

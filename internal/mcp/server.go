@@ -166,36 +166,36 @@ func StartMCPServer() {
 		}
 
 	case "streamable-http":
-		// StreamableHTTP 模式 (预留，等待 mcp-go 完整支持)
-		log.Info("⚠️  StreamableHTTP mode requested, but not fully implemented in mcp-go v0.29.0")
-		log.Info("🔄 Falling back to SSE HTTP mode on port %s", httpPort)
+		// StreamableHTTP 模式 (使用 mcp-go v0.30.0 的完整支持)
+		log.Info("Starting MCP Server in StreamableHTTP mode on port %s", httpPort)
 
 		// BaseURL 应该是客户端可以访问的地址
 		baseURL := getEnvOrDefault("MCP_BASE_URL", mcpConfig.MCP.Transport.BaseURL)
 
-		sseServer := server.NewSSEServer(mcpServer,
-			server.WithBaseURL(baseURL),
-			server.WithSSEEndpoint("/sse"),
-			server.WithMessageEndpoint("/message"),
+		// 创建 StreamableHTTP 服务器
+		streamableServer := server.NewStreamableHTTPServer(mcpServer,
+			server.WithEndpointPath("/mcp"),
+			server.WithStateLess(true), // 无状态模式，适合容器部署
 		)
 
 		// 创建带 CORS 支持的 HTTP 服务器
 		// 服务器绑定到 0.0.0.0 以接受外部连接
 		httpServer := &http.Server{
 			Addr:    "0.0.0.0:" + httpPort,
-			Handler: corsMiddleware(sseServer),
+			Handler: corsMiddleware(streamableServer),
 		}
 
 		// HTTP 模式下根据配置决定是否继续显示日志
 		log.SetShowLog(static.ShouldShowLog())
 
-		log.Info("✅ MCP SSE Server is now running on 0.0.0.0:%s", httpPort)
-		log.Info("📡 SSE Endpoint: %s/sse", baseURL)
-		log.Info("📤 Message Endpoint: %s/message", baseURL)
+		// 启动 StreamableHTTP 服务器
+		log.Info("✅ MCP StreamableHTTP Server is now running on 0.0.0.0:%s", httpPort)
+		log.Info("🔗 StreamableHTTP Endpoint: %s/mcp", baseURL)
 		log.Info("🌐 CORS enabled for all origins")
+		log.Info("📋 Transport: StreamableHTTP (stateless)")
 
 		if err := httpServer.ListenAndServe(); err != nil {
-			log.Panic("Failed to start SSE server: %v", err)
+			log.Panic("Failed to start StreamableHTTP server: %v", err)
 		}
 
 	default:

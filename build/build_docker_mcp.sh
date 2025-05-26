@@ -127,7 +127,7 @@ show_run_examples() {
     echo "docker run -d \\"
     echo "  --name dify-sandbox-mcp \\"
     echo "  -p 3000:3000 \\"
-    echo "  -e MCP_TRANSPORT=sse \\"
+    echo "  -e MCP_TRANSPORT=streamable-http \\"
     echo "  -e MCP_HTTP_PORT=3000 \\"
     echo "  -e MCP_BASE_URL=http://your-server.com:3000 \\"
     echo "  -e MCP_SHOW_LOG=true \\"
@@ -137,8 +137,8 @@ show_run_examples() {
     echo ""
     echo "# MCP Inspector 测试："
     echo "# 1. 启动容器后，打开 https://modelcontextprotocol.io/docs/tools/inspector"
-    echo "# 2. 选择 'Server-Sent Events (SSE)' 连接类型"
-    echo "# 3. 输入 SSE URL: http://your-server:3000/sse"
+    echo "# 2. StreamableHTTP 模式：选择 'HTTP' 连接类型，输入 URL: http://your-server:3000/mcp"
+    echo "# 3. SSE 模式：选择 'Server-Sent Events (SSE)' 连接类型，输入 SSE URL: http://your-server:3000/sse"
     echo "# 4. 点击连接测试"
 }
 

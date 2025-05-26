@@ -10,7 +10,7 @@ mcp:
   # 传输配置
   transport:
     # 默认传输模式: stdio, sse, http, streamable-http
-    mode: "sse"
+    mode: "streamable-http"
     # HTTP 模式端口 (仅在 sse/http/streamable-http 模式下使用)
     http_port: 3000
     # HTTP 基础 URL (仅在 HTTP 模式下使用)
@@ -57,6 +57,10 @@ security:
   enable_preload: false
   # 允许的系统调用 (如果不了解 seccomp 工作原理请保持为空)
   allowed_syscalls: []
+  # Node.js 特定安全配置
+  nodejs:
+    # 是否禁用 Node.js seccomp (true = 完全禁用安全限制，false = 启用安全限制)
+    disable_seccomp: true
 
 # 代理配置
 proxy:

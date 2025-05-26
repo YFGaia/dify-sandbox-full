@@ -114,6 +114,13 @@ func applyMCPEnvOverrides() {
 		mcpServerConfig.Security.AllowedSyscalls = ary
 	}
 
+	// Node.js security configuration
+	if disableNodejsSeccomp := os.Getenv("DISABLE_NODEJS_SECCOMP"); disableNodejsSeccomp != "" {
+		if dns, err := strconv.ParseBool(disableNodejsSeccomp); err == nil {
+			mcpServerConfig.Security.NodeJS.DisableSeccomp = dns
+		}
+	}
+
 	// 代理配置
 	if socks5Proxy := os.Getenv("SOCKS5_PROXY"); socks5Proxy != "" {
 		mcpServerConfig.Proxy.Socks5 = socks5Proxy

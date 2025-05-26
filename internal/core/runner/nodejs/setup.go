@@ -92,3 +92,25 @@ func checkLibAvaliable() bool {
 
 	return true
 }
+
+func checkNodeJsEnvironment() error {
+	// Check if Node.js binary exists
+	nodejsPath := "/usr/local/bin/node"
+	if _, err := os.Stat(nodejsPath); os.IsNotExist(err) {
+		return fmt.Errorf("Node.js binary not found at %s", nodejsPath)
+	}
+
+	// Check if koffi module is available in the project (non-fatal)
+	koffiPath := path.Join(LIB_PATH, PROJECT_NAME, "node_temp/node_modules/koffi")
+	if _, err := os.Stat(koffiPath); os.IsNotExist(err) {
+		log.Info("Warning: koffi module not found at %s, seccomp protection will be disabled", koffiPath)
+	}
+
+	// Check if nodejs.so exists (non-fatal)
+	libPath := path.Join(LIB_PATH, LIB_NAME)
+	if _, err := os.Stat(libPath); os.IsNotExist(err) {
+		log.Info("Warning: nodejs.so library not found at %s, seccomp protection will be disabled", libPath)
+	}
+
+	return nil
+}

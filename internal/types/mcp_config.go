@@ -28,6 +28,9 @@ type MCPServerConfig struct {
 		EnableNetwork   bool  `yaml:"enable_network"`
 		EnablePreload   bool  `yaml:"enable_preload"`
 		AllowedSyscalls []int `yaml:"allowed_syscalls"`
+		NodeJS          struct {
+			DisableSeccomp bool `yaml:"disable_seccomp"`
+		} `yaml:"nodejs"`
 	} `yaml:"security"`
 
 	Proxy struct {

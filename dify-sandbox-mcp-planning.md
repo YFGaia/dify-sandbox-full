@@ -47,9 +47,10 @@ MCP Client → MCP Server → internal/service/ → core execution
 ## 🚀 技术选型建议
 
 ### MCP SDK
-- **选择**：`github.com/mark3labs/mcp-go`
-- **传输方式**：StreamableHTTP
-- **优势**：高性能、易集成、社区活跃
+- **选择**：`github.com/mark3labs/mcp-go v0.30.0+`
+- **传输方式**：StreamableHTTP（默认推荐）
+- **备选传输**：SSE、STDIO
+- **优势**：高性能、易集成、社区活跃、支持无状态部署
 
 ### 代码集成策略
 - **导入方式**：直接导入 dify-sandbox 的内部包
@@ -272,14 +273,17 @@ type HealthCheckResult struct {
 - [x] **4.1** 完成主程序入口 (`cmd/mcp-server/main.go`)
 - [x] **4.2** 测试环境初始化流程
 - [x] **4.3** 测试各个 MCP tools 的功能（简化版本）
-- [ ] **4.4** 测试错误处理和边缘情况
-- [ ] **4.5** 性能测试和优化
+- [x] **4.4** 实现 StreamableHTTP 传输模式
+- [x] **4.5** 将 StreamableHTTP 设置为默认传输模式
+- [ ] **4.6** 测试错误处理和边缘情况
+- [ ] **4.7** 性能测试和优化
 
 ### Phase 5: 文档和部署 📚
 - [x] **5.1** 编写 README 文档
-- [ ] **5.2** 编写使用示例和集成指南
-- [ ] **5.3** 创建构建和部署脚本
-- [ ] **5.4** 编写故障排除指南
+- [x] **5.2** 更新文档以反映 StreamableHTTP 默认模式
+- [ ] **5.3** 编写使用示例和集成指南
+- [ ] **5.4** 创建构建和部署脚本
+- [ ] **5.5** 编写故障排除指南
 
 ### Phase 6: Linux 环境完整版本 🐧
 - [ ] **6.1** 在 Linux 环境中构建底层库
@@ -298,17 +302,21 @@ type HealthCheckResult struct {
 
 ### ✅ 已完成的重要里程碑
 
-1. **MCP Server 架构完成** - 成功集成 mark3labs/mcp-go SDK
+1. **MCP Server 架构完成** - 成功集成 mark3labs/mcp-go SDK v0.30.0
 2. **所有 MCP Tools 实现** - 6个核心工具全部实现并注册
 3. **Handler 层完成** - 代码执行、依赖管理、健康检查处理器
-4. **简化版本可用** - 在 macOS 上成功构建和测试
-5. **MCP 协议验证** - 工具列表和调用功能正常工作
+4. **StreamableHTTP 传输模式** - 实现并设置为默认传输模式
+5. **多传输模式支持** - 支持 StreamableHTTP、SSE、STDIO 三种模式
+6. **简化版本可用** - 在 macOS 上成功构建和测试
+7. **MCP 协议验证** - 工具列表和调用功能正常工作
+8. **文档更新完成** - README 和规划文档已更新
 
 ### 🚧 当前状态
 
+- **StreamableHTTP 模式**：已实现并设为默认，支持无状态部署
 - **简化版本**：完全可用，适合 MCP 协议测试和开发
 - **完整版本**：需要 Linux 环境进行最终测试
-- **文档**：基础文档完成，使用指南待完善
+- **文档**：基础文档和配置说明已完成
 
 ### 📋 下一步重点
 
